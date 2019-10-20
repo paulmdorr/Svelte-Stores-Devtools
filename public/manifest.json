@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Svelte Stores",
+  "version": "1.0",
+  "description": "Adds support for Svelte Stores debugging.",
+  "icons": {
+    "48": "icons/svelte-48.png",
+    "512": "icons/svelte-512.png"
+  },
+  "devtools_page": "devtools.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["load.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
