@@ -14,7 +14,4 @@ if (devtools.panels.onThemeChanged)
 
 new App({
   target: document.body,
-  props: {
-    name: 'Angie',
-  },
 })
