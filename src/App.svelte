@@ -1,12 +1,15 @@
 <script>
   import { onMount } from 'svelte'
   import { runtime, devtools } from 'chrome'
+
+  import TreeDrawer from './TreeDrawer.svelte'
+
   export let name
 
-  let stuff = 'nothing'
+  let stores
+  let currentStore
 
   onMount(async () => {
-    stuff = 'something'
     let port = runtime.connect()
 
     port.postMessage({
@@ -14,15 +17,35 @@
       tabId: devtools.inspectedWindow.tabId,
     })
     port.onMessage.addListener(event => {
-      console.log(event)
-      stuff = JSON.stringify(event)
+      stores = { ...event }
     })
   })
+
+  const selectStore = e => {
+    currentStore = e.target.value
+  }
 </script>
 
-<pre>{stuff}</pre>
+{#if stores}
+  <select on:change={selectStore}>
+    {#if !currentStore}
+      <option>-- Please select an store --</option>
+    {/if}
+    {#each Object.keys(stores) as key}
+      <option selected={currentStore === key}>{key}</option>
+    {/each}
+  </select>
+  <TreeDrawer value={stores[currentStore]} />
+{:else}
+  <div>Loading...</div>
+{/if}
 
 <style>
+  select {
+    height: 50px;
+    width: 100%;
+  }
+
   :global(html) {
     height: 100%;
   }
