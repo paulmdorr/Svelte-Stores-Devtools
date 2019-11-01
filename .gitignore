@@ -6,6 +6,7 @@ yarn-error.log
 /__sapper__/
 .env
 .vscode
+public/devtools/bundle.css
 public/devtools/bundle.css.map
 public/devtools/bundle.js
 public/devtools/bundle.js.map
