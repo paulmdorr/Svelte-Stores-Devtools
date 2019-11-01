@@ -6,7 +6,6 @@ chrome.runtime.onConnect.addListener(listenerPort => {
     const { type, storeData, name } = msg
 
     if (type === 'SVELTE_STORES_ADDON') {
-      console.log(msg)
       const { stores, ...currentPage } =
         pages.get(senderPort.sender.tab.id) || {}
       const updatedStores = stores
@@ -18,11 +17,14 @@ chrome.runtime.onConnect.addListener(listenerPort => {
 
       pages.set(senderPort.sender.tab.id, {
         ...currentPage,
-        updatedStores,
+        stores: updatedStores,
       })
+      if (devtools.get(senderPort.sender.tab.id)) {
+        devtools.get(senderPort.sender.tab.id).postMessage(updatedStores)
+      }
     } else if (type === 'SVELTE_STORES_ADDON_REQUEST') {
-      console.log(msg)
-      senderPort.postMessage(pages.get(msg.tabId))
+      devtools.set(msg.tabId, senderPort)
+      senderPort.postMessage(pages.get(msg.tabId).stores)
     }
     listenerPort.onDisconnect.addListener(listenerPort =>
       pages.delete(listenerPort.sender.tab.id)
