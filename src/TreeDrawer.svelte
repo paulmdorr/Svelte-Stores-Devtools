@@ -23,17 +23,34 @@
   </div>
 {:else}
   {#if typeof value === 'string'}
-    <div>{label ? `${label}: ` : ''}{`'${value}'`}</div>
+    <div>
+      <span class="label">{label ? `${label}: ` : ''}</span>
+      <span class="string">{`'${value}'`}</span>
+    </div>
   {:else}
-    <div>{label ? `${label}: ` : ''}{value}</div>
+    <div>
+      <span class="label">{label ? `${label}: ` : ''}</span>
+      <span class="number">{value}</span>
+    </div>
   {/if}
 {/if}
 
 <style>
   div {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
-      'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-size: 14px;
+    font-family: monospace;
+    font-size: 12px;
     padding-left: 10px;
+  }
+
+  :global(span.label) {
+    color: #85acd8;
+  }
+
+  span.string {
+    color: #a6ce6b;
+  }
+
+  span.number {
+    color: #ca7fb1;
   }
 </style>

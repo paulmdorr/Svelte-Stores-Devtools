@@ -8,6 +8,7 @@
 
   let stores
   let currentStore
+  let state = 0
 
   onMount(async () => {
     let port = runtime.connect()
@@ -24,26 +25,58 @@
   const selectStore = e => {
     currentStore = e.target.value
   }
+
+  $: firstState = currentStore && state === 0
+  $: lastState = currentStore && state === stores[currentStore].length - 1
 </script>
 
-{#if stores}
-  <select on:change={selectStore}>
-    {#if !currentStore}
-      <option>-- Please select an store --</option>
-    {/if}
-    {#each Object.keys(stores) as key}
-      <option selected={currentStore === key}>{key}</option>
-    {/each}
-  </select>
-  <TreeDrawer value={stores[currentStore]} />
-{:else}
-  <div>Loading...</div>
-{/if}
+<main>
+  {#if stores}
+    <div class="select">
+      <label for="stores">Stores:</label>
+      <select name="stores" on:change={selectStore}>
+        {#if !currentStore}
+          <option>-- Please select an store --</option>
+        {/if}
+        {#each Object.keys(stores) as key}
+          <option selected={currentStore === key}>{key}</option>
+        {/each}
+      </select>
+    </div>
+    <div class="buttons">
+      <button on:click={() => (state -= 1)} disabled={firstState}>Prev</button>
+      <button on:click={() => (state += 1)} disabled={lastState}>Next</button>
+    </div>
+    <div>
+      {#if currentStore}
+        <TreeDrawer value={stores[currentStore][state]} />
+      {/if}
+    </div>
+  {:else}
+    <div>Loading...</div>
+  {/if}
+</main>
 
 <style>
-  select {
-    height: 50px;
+  main {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 30px 30px auto;
     width: 100%;
+  }
+
+  div.select {
+    display: grid;
+    grid-template-columns: 10% 90%;
+  }
+
+  select {
+    height: 30px;
+  }
+
+  div.buttons {
+    display: grid;
+    grid-template-columns: 50% 50%;
   }
 
   :global(html) {
@@ -53,27 +86,25 @@
     display: flex;
     margin: 0;
     height: 100%;
-    color: rgb(74, 74, 79);
-    font-size: 11px;
-    font-family: monospace;
+    color: #b1b1b3;
+    background-color: #2a2a2e;
+    scrollbar-color: #737373 #3c3c3d;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+      'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 12px;
   }
-  :global(body.dark) {
-    color: rgb(177, 177, 179);
-    background-color: rgb(42, 42, 46);
-    scrollbar-color: rgb(115, 115, 115) rgb(60, 60, 61);
-  }
-  :global(body.dark ::-webkit-scrollbar) {
+  :global(body ::-webkit-scrollbar) {
     width: 14px;
     height: 14px;
     background-color: transparent;
-    box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 1px #ffffff80;
   }
-  :global(body.dark ::-webkit-scrollbar-thumb) {
-    background-color: rgb(51, 51, 51);
-    box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.5);
+  :global(body ::-webkit-scrollbar-thumb) {
+    background-color: #333333;
+    box-shadow: inset 0 0 1px #ffffff80;
   }
-  :global(body.dark.chrome) {
-    background-color: rgb(36, 36, 36);
+  :global(body.chrome) {
+    background-color: #242424;
   }
   :global(ul) {
     margin: 0;

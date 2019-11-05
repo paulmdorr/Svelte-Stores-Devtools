@@ -7,7 +7,22 @@
   export let openingSymbol
   export let closingSymbol
 
+  const MAX_LENGTH = 50
   let collapsed
+  let stringCollection = (function() {
+    let result = ''
+    let length = MAX_LENGTH
+
+    const stringObject = JSON.stringify(collection)
+    length =
+      MAX_LENGTH < stringObject.length - 1
+        ? MAX_LENGTH
+        : stringObject.length - 2
+
+    result = stringObject.substr(1, length)
+
+    return length === MAX_LENGTH ? `${result}…` : result
+  })()
 
   const toggleCollapse = () => {
     collapsed = !collapsed
@@ -15,29 +30,33 @@
 </script>
 
 <span class="collapsible" on:click={toggleCollapse}>
-  {label ? `${label}: ` : ''}{openingSymbol}
+  <span>
+    {#if collapsed}&#9658;{:else}&#9660;{/if}
+  </span>
+  <span class="label">{label ? `${label}: ` : ''}</span>
 </span>
-<ul class:collapsed>
-  {#if Array.isArray(collection)}
-    <ArrayDrawer {collection} />
-  {:else if typeof collection === 'object'}
-    <ObjectDrawer {collection} />
-  {/if}
-</ul>
+<span>{openingSymbol}</span>
+{#if !collapsed}
+  <ul>
+    {#if Array.isArray(collection)}
+      <ArrayDrawer {collection} />
+    {:else}
+      <ObjectDrawer {collection} />
+    {/if}
+  </ul>
+{:else}
+  <span>{stringCollection}</span>
+{/if}
 <span>{closingSymbol}</span>
 
 <style>
   span.collapsible:hover {
     cursor: pointer;
-    background: darkslategray;
+    background: #4f4f57;
   }
 
   span.collapsible:hover + ul,
   span.collapsible:hover ~ span {
-    background: darkslategray;
-  }
-
-  .collapsed {
-    display: none;
+    background: #4f4f57;
   }
 </style>
